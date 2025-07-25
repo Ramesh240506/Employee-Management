@@ -34,4 +34,8 @@ public class UserService {
         }
         return "Failed";
     }
+
+    public UserEntity getEmployeeByUserName(String username) {
+        return userRepository.findByUsername(username);
+    }
 }

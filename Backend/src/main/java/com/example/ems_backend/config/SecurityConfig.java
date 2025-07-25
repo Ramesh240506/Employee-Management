@@ -29,7 +29,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
                 authz->
-                        authz.requestMatchers("/api/employee/search").authenticated()
+                        authz.
+                        requestMatchers("/api/login").permitAll()
+                                .requestMatchers("/api/register","/api/image/**").permitAll()
+                                .requestMatchers("/api/**").authenticated()
                                 .anyRequest().permitAll());
 
         http.sessionManagement(session->

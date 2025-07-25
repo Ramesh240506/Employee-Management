@@ -1,10 +1,15 @@
 package com.example.ems_backend.service;
 
 import com.example.ems_backend.entity.Employee;
+import com.example.ems_backend.entity.UserEntity;
 import com.example.ems_backend.repository.EmployeeRepository;
+import com.example.ems_backend.repository.UserRepository;
 import jakarta.validation.constraints.Null;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,8 +23,10 @@ public class EmployeeService {
     @Autowired
     EmployeeRepository empRepo;
 
-    public List<Employee> fetchEmpRecords() {
-      return empRepo.findAll();
+    @Autowired
+    UserRepository userRepository;
+    public List<Employee> fetchEmpRecords(Long id) {
+      return empRepo.findAllByUserId(id);
 
     }
 
@@ -47,7 +54,15 @@ public class EmployeeService {
 
     public void insertEmpRecords(Employee employee, MultipartFile imageFile) throws IOException {
 
-            employee.setImageName(imageFile.getOriginalFilename());
+
+        String username=SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserEntity user=userRepository.findByUsername(username);
+        System.out.println("Username: "+ username);
+        employee.setUser(user);
+
+
+        employee.setImageName(imageFile.getOriginalFilename());
             employee.setImageType(imageFile.getContentType());
             employee.setImageData(imageFile.getBytes());
 
@@ -82,5 +97,13 @@ public class EmployeeService {
     public List<Employee> sortEmpResults(String sortBy) {
 //        For sorting this line
         return empRepo.findAll(Sort.by(Sort.Direction.ASC,sortBy));
+    }
+
+
+
+    public Employee getEmployeeByUserId(Long id) {
+        if(empRepo.existsById(id))
+        return empRepo.findById(id).orElseThrow();
+        return null;
     }
 }

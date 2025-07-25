@@ -1,9 +1,13 @@
 package com.example.ems_backend.controller;
 
 import com.example.ems_backend.entity.Employee;
+import com.example.ems_backend.entity.UserEntity;
+import com.example.ems_backend.repository.UserRepository;
 import com.example.ems_backend.service.EmployeeService;
+import com.example.ems_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,14 +23,23 @@ public class EmployeeController {
     @Autowired
     EmployeeService service;
 
+    @Autowired
+    UserService userService;
+
     @GetMapping("/checking")
     public String check() {
         return "Auth success..!";
     }
 
     @GetMapping
-    public List<Employee> fetchEmpData() {
-        return service.fetchEmpRecords();
+    public List<Employee> fetchEmpData(Authentication authentication) {
+        String username=authentication.getName();
+
+        UserEntity user =userService.getEmployeeByUserName(username);
+
+//        Employee employee=service.getEmployeeByUserId(user.getId());
+
+        return service.fetchEmpRecords(user.getId());
     }
 
     @GetMapping("{id}")

@@ -12,7 +12,6 @@ public class Employee {
     private Long id;
     private String firstName;
     private String lastName;
-    private String password;
     @Column(nullable = false,unique = true)
     private String email;
 
@@ -21,4 +20,8 @@ public class Employee {
 
     @Lob
     private byte[] imageData;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }

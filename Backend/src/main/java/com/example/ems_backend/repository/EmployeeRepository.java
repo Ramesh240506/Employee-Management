@@ -15,4 +15,6 @@ public interface EmployeeRepository extends JpaRepository<Employee,Long> {
             )
     List<Employee> searchResults(String keyword);
 
+
+    List<Employee> findAllByUserId(Long id);
 }
